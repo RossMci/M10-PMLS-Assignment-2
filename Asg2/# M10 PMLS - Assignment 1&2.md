@@ -2,38 +2,132 @@
 
 ## Developing API For Excel
 
-This project analyses a skin clinic marketing campaign with 10,000 customers. The aim is to find which customer groups were more likely to respond to the campaign.
+This project was completed for M10 Productionization of Machine Learning Systems Assignment 2.
 
-The campaign analysis is provided through FastAPI and connected to Microsoft Excel using Power Query.
+The project analyses a skin clinic marketing campaign containing 10,000 customer records. The aim is to identify which customer groups were more likely to respond to the marketing campaign.
+
+The analysis was completed using Python and Pandas. FastAPI was used to create an API containing the campaign analysis results. The API was deployed publicly using Render and connected to Microsoft Excel using Power Query.
+
+Excel is used to display the campaign analysis in tables and includes a Form Control button that can refresh the data from the deployed API.
+
+## Important Note for Lecturer
+
+Please use the `Asg2` folder when reviewing Assignment 2.
+
+The `Asg1` folder contains my previous Assignment 1 work and is not part of this Assignment 2 submission.
+
+All files required for Assignment 2 are located in the `Asg2` folder.
+
+The deployed Assignment 2 API is:
+
+https://m10-pmls-assignment-2.onrender.com/campaign-analysis
+
+## Dataset
+
+The dataset used for this project is:
+
+`skin clinic campaign.csv`
+
+The dataset contains 10,000 customer records with the following columns:
+
+- `CustID`
+- `Gender`
+- `AgeGroup`
+- `Purchase_Last_Quarter`
+- `Unique_Products_Purchased`
+- `Response_to_Campaign`
 
 ## Analysis
 
-The following areas were analysed:
+The following four areas were analysed:
 
-- Gender
-- Age group
-- Purchase in the last quarter
-- Number of unique products purchased
+1. Gender vs Campaign Response
+2. Age Group vs Campaign Response
+3. Purchase in Last Quarter vs Campaign Response
+4. Product Usage vs Campaign Response
 
-The response rate was calculated for each group.
+The response rate was calculated for each customer group.
 
-## Files
+## Gender vs Campaign Response
+
+The campaign response rates by gender were:
+
+| Gender | Total Customers | Responded | Response Rate |
+|---|---:|---:|---:|
+| Female | 5,024 | 2,199 | 43.77% |
+| Male | 4,976 | 1,696 | 34.08% |
+
+Female customers had a higher campaign response rate than male customers.
+
+## Age Group vs Campaign Response
+
+The campaign response rates by age group were:
+
+| Age Group | Response Rate |
+|---|---:|
+| <30 | 32.93% |
+| 30-50 | 47.06% |
+| >50 | 32.60% |
+
+Customers aged 30-50 had the highest campaign response rate.
+
+## Purchase in Last Quarter vs Campaign Response
+
+The response rates based on whether the customer purchased in the previous quarter were:
+
+| Purchased Last Quarter | Response Rate |
+|---|---:|
+| No | 21.69% |
+| Yes | 49.65% |
+
+Customers who purchased in the last quarter had a much higher response rate.
+
+## Product Usage vs Campaign Response
+
+Customers were grouped based on the number of unique products they purchased.
+
+| Unique Products | Response Rate |
+|---|---:|
+| 1-4 | 18.08% |
+| 5-8 | 38.48% |
+| >8 | 52.00% |
+
+Customers who purchased more products had higher campaign response rates.
+
+Customers who purchased more than 8 unique products had the highest response rate at 52.00%.
+
+These results show associations within the campaign data and do not prove that these customer characteristics caused the campaign responses.
+
+## Main Findings
+
+The main findings from the analysis were:
+
+- Female customers had a higher response rate than male customers.
+- Customers aged 30-50 had the highest response rate.
+- Customers who purchased in the last quarter had a higher response rate.
+- Customers with higher product usage had higher campaign response rates.
+- Customers who purchased more than 8 unique products had the highest product usage response rate.
+
+## Project Files
+
+The Assignment 2 files are located inside the `Asg2` folder.
+
+The project contains:
 
 - `MainPMLS.py` - FastAPI application
-- `skin clinic campaign.csv` - dataset
-- `requirements.txt` - Python packages
-- `ProdofMachineLearningSystemsAS2.ipynb` - analysis notebook
-- `M10_PMLS_Assignment_2.xlsm` - Excel workbook
+- `Asg2.ipynb` - Jupyter Notebook containing the analysis
+- `skin clinic campaign.csv` - campaign dataset
+- `requirements.txt` - required Python packages
+- `campaign_analysis.xlsx` - Excel campaign analysis
+- `README.md` - project information
+
+If the final Excel workbook contains the VBA refresh macro, it can be saved as:
+
+`M10_PMLS_Assignment_2.xlsm`
 
 ## Requirements
 
-Install the required packages:
-
-```bash
-pip install -r requirements.txt
-```
-
-Packages used:
+The following Python packages are required:
 
 ```text
 fastapi
@@ -42,15 +136,21 @@ pandas
 numpy
 ```
 
-## Run FastAPI
+Install the packages using:
 
-Open the project folder in VS Code and run:
+```bash
+pip install -r requirements.txt
+```
+
+## Running FastAPI Locally
+
+Open the `Asg2` project folder in VS Code.
+
+Run:
 
 ```bash
 uvicorn MainPMLS:app --reload
 ```
-
-The FastAPI application can then be accessed using these links:
 
 Home page:
 
@@ -64,7 +164,7 @@ Campaign analysis:
 http://127.0.0.1:8000/campaign-analysis
 ```
 
-Swagger documentation:
+FastAPI documentation:
 
 ```text
 http://127.0.0.1:8000/docs
@@ -76,15 +176,13 @@ ReDoc documentation:
 http://127.0.0.1:8000/redoc
 ```
 
-To stop the server, press:
-
-```text
-Ctrl + C
-```
-
 ## FastAPI Application
 
-The Python analysis was converted into a FastAPI application using `MainPMLS.py`.
+The FastAPI application is contained in:
+
+`MainPMLS.py`
+
+The application loads the campaign dataset, calculates the campaign response rates and makes the results available through the API.
 
 The required endpoint is:
 
@@ -92,112 +190,86 @@ The required endpoint is:
 /campaign-analysis
 ```
 
-The endpoint provides the campaign analysis results for:
+The endpoint returns four analysis sections:
 
-- Gender vs Campaign Response
-- Age Group vs Campaign Response
-- Purchase in Last Quarter vs Campaign Response
-- Product Usage vs Campaign Response
+- `Gender_vs_Campaign_Response`
+- `Age_Group_vs_Campaign_Response`
+- `Purchase_Last_Quarter_vs_Campaign_Response`
+- `Product_Usage_vs_Campaign_Response`
 
-The results are returned in a structured format that can be converted into tables using Excel Power Query.
-
-## Results
-
-- Female response rate: 43.77%
-- Male response rate: 34.08%
-- Age 30-50 had the highest age response rate at 47.06%
-- Customers who purchased in the last quarter had a 49.65% response rate
-- Customers who purchased more than 8 unique products had a 52.00% response rate
+The results are returned in a structured format that Microsoft Excel Power Query can convert into tables.
 
 ## Render Deployment
 
-The FastAPI application was deployed using Render so that Excel can access the API online.
+The FastAPI application was deployed publicly using Render.
 
-Build command:
+The following Render configuration was used:
 
 ```text
+Language:
+Python 3
+
+Branch:
+main
+
+Root Directory:
+Asg2
+
+Build Command:
 pip install -r requirements.txt
-```
 
-Start command:
-
-```text
+Start Command:
 uvicorn MainPMLS:app --host 0.0.0.0 --port $PORT
 ```
 
-## Deployed API Links
+## Deployed API
 
-Home page:
+The application is publicly available at:
 
-```text
-https://YOUR-SERVICE-NAME.onrender.com/
-```
+https://m10-pmls-assignment-2.onrender.com/
 
-Campaign analysis:
+Campaign analysis endpoint:
 
-```text
-https://YOUR-SERVICE-NAME.onrender.com/campaign-analysis
-```
+https://m10-pmls-assignment-2.onrender.com/campaign-analysis
 
-Swagger documentation:
+FastAPI documentation:
 
-```text
-https://YOUR-SERVICE-NAME.onrender.com/docs
-```
+https://m10-pmls-assignment-2.onrender.com/docs
 
 ReDoc documentation:
 
-```text
-https://YOUR-SERVICE-NAME.onrender.com/redoc
-```
-
-Replace `YOUR-SERVICE-NAME` with the actual Render service name.
+https://m10-pmls-assignment-2.onrender.com/redoc
 
 ## Excel Power Query
 
-Microsoft Excel was connected to the deployed FastAPI endpoint using Power Query.
+Microsoft Excel was connected to the deployed FastAPI application using Power Query.
 
-In Excel:
+The connection was created using:
 
 ```text
 Data > Get Data > From Web
 ```
 
-The deployed campaign analysis URL was used:
+The deployed API URL used in Power Query is:
 
 ```text
-https://YOUR-SERVICE-NAME.onrender.com/campaign-analysis
+https://m10-pmls-assignment-2.onrender.com/campaign-analysis
 ```
 
-The API results were loaded into four Excel tables:
+The four API analysis sections were converted into separate Excel tables.
+
+The Excel workbook contains:
 
 - Gender
 - Age Group
 - Last Quarter
 - Product Usage
 
-The tables can also be refreshed using:
-
-```text
-Data > Refresh All
-```
+Using the Render URL means Excel can retrieve the analysis without the FastAPI application running locally.
 
 ## Excel Refresh Button
 
 A Form Control button was added to the Excel workbook to refresh the campaign analysis.
-
-The button runs the following VBA macro:
-
-```vb
-Sub RefreshCampaignAnalysis()
-
-    ThisWorkbook.RefreshAll
-    Application.CalculateUntilAsyncQueriesDone
-
-    MsgBox "Campaign analysis refreshed successfully."
-
-End Sub
-```
 
 The button is named:
 
@@ -205,23 +277,68 @@ The button is named:
 Refresh Campaign Analysis
 ```
 
-When clicked, Excel refreshes the Power Query connection and gets the latest results from the FastAPI endpoint.
+The VBA macro used for the button is:
 
-## Assignment Requirements
+```vb
+Sub RefreshCampaignAnalysis()
 
-1. The analysis was converted into a FastAPI application.
-2. The `/campaign-analysis` endpoint was created.
-3. The endpoint provides the campaign analysis results in a structured tabular format.
-4. The API was deployed using Render.
-5. Excel Power Query was connected to the hosted API using From Web.
-6. The analysis results were loaded into Excel tables.
-7. A Form Control button was created to refresh the latest campaign analysis.
-8. The completed Excel workbook is saved as `M10_PMLS_Assignment_2.xlsm`.
+    ThisWorkbook.RefreshAll
 
-## Conclusion
+    Application.CalculateUntilAsyncQueriesDone
 
-The campaign analysis was completed using Python and FastAPI.
+    MsgBox "Campaign analysis refreshed successfully.", _
+           vbInformation, _
+           "Campaign Analysis"
 
-The API was deployed using Render and connected to Microsoft Excel using Power Query.
+End Sub
+```
 
-The Excel workbook displays the campaign analysis tables and includes a refresh button to retrieve the latest results from the API.
+When the button is clicked, Excel refreshes the Power Query data from the deployed API.
+
+The workbook should be saved as an Excel Macro-Enabled Workbook if the VBA macro is included:
+
+```text
+M10_PMLS_Assignment_2.xlsm
+```
+
+## GitHub Repository
+
+The project repository is:
+
+https://github.com/RossMci/M10-PMLS-Assignment-2
+
+For Assignment 2, please use the `Asg2` folder only.
+
+The `Asg1` folder contains previous Assignment 1 work and is not part of the Assignment 2 submission.
+
+## Assignment Requirements Completed
+
+The following Assignment 2 requirements were completed:
+
+1. Analysed Gender vs Campaign Response.
+2. Analysed Age Group vs Campaign Response.
+3. Analysed Purchase in Last Quarter vs Campaign Response.
+4. Analysed Product Usage vs Campaign Response.
+5. Converted the solution into a FastAPI application.
+6. Created the `/campaign-analysis` endpoint.
+7. Returned the campaign analysis results in a structured tabular format.
+8. Deployed the FastAPI application publicly using Render.
+9. Connected Microsoft Excel to the hosted API using Power Query.
+10. Loaded the campaign analysis results into Excel tables.
+11. Added a Form Control button to refresh the campaign analysis results.
+
+## Submission Links
+
+Deployed campaign analysis API:
+
+https://m10-pmls-assignment-2.onrender.com/campaign-analysis
+
+FastAPI documentation:
+
+https://m10-pmls-assignment-2.onrender.com/docs
+
+GitHub repository:
+
+https://github.com/RossMci/M10-PMLS-Assignment-2
+
+Please use the `Asg2` folder in the GitHub repository when reviewing Assignment 2.
