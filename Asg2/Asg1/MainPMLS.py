@@ -1,9 +1,3 @@
-# ============================================================
-# M10 PMLS - ASSIGNMENT 1
-# Model Deployment Using FastAPI
-# Skin Clinic Marketing Campaign Analysis
-# ============================================================
-
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 import pandas as pd
@@ -13,36 +7,22 @@ import webbrowser
 import threading
 
 
-# ============================================================
-# CREATE FASTAPI APPLICATION
-# ============================================================
-
 app = FastAPI(
     title="Skin Clinic Campaign Analysis",
-    description=(
-        "Analysis of customer response to the "
-        "Skin Clinic marketing campaign."
-    ),
+    description="Analysis of customer response to the Skin Clinic marketing campaign.",
     version="1.0"
 )
 
 
-# ============================================================
-# LOAD DATASET
-# ============================================================
-
+# Load dataset
 df = pd.read_csv("skin clinic campaign.csv")
 
 
-# ============================================================
-# RESPONSE RATE FUNCTION
-# ============================================================
-
+# Calculate response rates
 def response_rate_table(data, group_column):
 
     temp = data.copy()
 
-    # Convert Yes/No response into True/False
     temp["Responded"] = (
         temp["Response_to_Campaign"]
         .astype(str)
@@ -51,7 +31,6 @@ def response_rate_table(data, group_column):
         .eq("yes")
     )
 
-    # Calculate total customers, responses and response rate
     result = (
         temp.groupby(group_column, observed=False)
         .agg(
@@ -62,43 +41,30 @@ def response_rate_table(data, group_column):
         .reset_index()
     )
 
-    # Convert response rate to percentage
     result["Response Rate (%)"] = (
         result["Response_Rate"] * 100
     ).round(2)
 
-    # Remove temporary decimal response rate
     result = result.drop(columns=["Response_Rate"])
 
     return result
 
 
-# ============================================================
-# TASK 1
-# GENDER VS CAMPAIGN RESPONSE
-# ============================================================
-
+# Create analysis tables
 gender_analysis = response_rate_table(
     df,
     "Gender"
 )
-
-
-# ============================================================
-# TASK 2
-# AGE GROUP VS CAMPAIGN RESPONSE
-# ============================================================
 
 age_analysis = response_rate_table(
     df,
     "AgeGroup"
 )
 
-# Put age groups in the assignment's required order
 age_order = ["<30", "30-50", ">50"]
 
-# Only reorder if the labels in the dataset match
 if set(age_order).issubset(set(age_analysis["AgeGroup"].astype(str))):
+
     age_analysis["AgeGroup"] = pd.Categorical(
         age_analysis["AgeGroup"],
         categories=age_order,
@@ -111,28 +77,13 @@ if set(age_order).issubset(set(age_analysis["AgeGroup"].astype(str))):
         .reset_index(drop=True)
     )
 
-
-# ============================================================
-# TASK 3
-# PURCHASE IN LAST QUARTER VS CAMPAIGN RESPONSE
-# ============================================================
-
 purchase_analysis = response_rate_table(
     df,
     "Purchase_Last_Quarter"
 )
 
 
-# ============================================================
-# TASK 4
-# PRODUCT USAGE VS CAMPAIGN RESPONSE
-# ============================================================
-
-# Create product usage categories:
-# 1-4 products
-# 5-8 products
-# More than 8 products
-
+# Create product usage groups
 df["Product_Usage"] = pd.cut(
     df["Unique_Products_Purchased"],
     bins=[0, 4, 8, np.inf],
@@ -145,10 +96,7 @@ product_analysis = response_rate_table(
 )
 
 
-# ============================================================
-# HOME PAGE
-# ============================================================
-
+# Home page
 @app.get("/", response_class=HTMLResponse)
 def home():
 
@@ -239,17 +187,12 @@ def home():
     """
 
 
-# ============================================================
-# CAMPAIGN ANALYSIS ENDPOINT
-# ============================================================
-
+# Campaign analysis
 @app.get(
     "/campaign-analysis",
     response_class=HTMLResponse
 )
 def campaign_analysis():
-
-    # Convert pandas DataFrames to HTML tables
 
     gender_table = gender_analysis.to_html(
         index=False,
@@ -274,11 +217,6 @@ def campaign_analysis():
         classes="analysis-table",
         border=0
     )
-
-
-    # ========================================================
-    # HTML PAGE
-    # ========================================================
 
     html = f"""
     <!DOCTYPE html>
@@ -373,7 +311,6 @@ def campaign_analysis():
 
     </head>
 
-
     <body>
 
         <div class="container">
@@ -388,11 +325,6 @@ def campaign_analysis():
                 Skin Clinic Campaign Analysis
             </p>
 
-
-            <!-- ========================================= -->
-            <!-- GENDER ANALYSIS -->
-            <!-- ========================================= -->
-
             <h2>
                 1. Gender vs Campaign Response
             </h2>
@@ -400,19 +332,11 @@ def campaign_analysis():
             {gender_table}
 
             <div class="finding">
-
                 <strong>Finding:</strong>
-
                 Female customers had a response rate of
                 <strong>43.77%</strong>, compared with
                 <strong>34.08%</strong> for male customers.
-
             </div>
-
-
-            <!-- ========================================= -->
-            <!-- AGE ANALYSIS -->
-            <!-- ========================================= -->
 
             <h2>
                 2. Age Group vs Campaign Response
@@ -421,19 +345,11 @@ def campaign_analysis():
             {age_table}
 
             <div class="finding">
-
                 <strong>Finding:</strong>
-
                 Customers aged 30-50 recorded the highest
                 campaign response rate at
                 <strong>47.06%</strong>.
-
             </div>
-
-
-            <!-- ========================================= -->
-            <!-- PURCHASE ANALYSIS -->
-            <!-- ========================================= -->
 
             <h2>
                 3. Purchase in Last Quarter
@@ -443,21 +359,13 @@ def campaign_analysis():
             {purchase_table}
 
             <div class="finding">
-
                 <strong>Finding:</strong>
-
                 Customers who purchased in the last quarter
                 had a response rate of
                 <strong>49.65%</strong>, compared with
                 <strong>21.69%</strong> among customers
                 who did not.
-
             </div>
-
-
-            <!-- ========================================= -->
-            <!-- PRODUCT USAGE ANALYSIS -->
-            <!-- ========================================= -->
 
             <h2>
                 4. Product Usage vs Campaign Response
@@ -466,19 +374,11 @@ def campaign_analysis():
             {product_table}
 
             <div class="finding">
-
                 <strong>Finding:</strong>
-
                 Customers who purchased more than eight
                 unique products had the highest response
                 rate at <strong>52.00%</strong>.
-
             </div>
-
-
-            <!-- ========================================= -->
-            <!-- SUMMARY -->
-            <!-- ========================================= -->
 
             <div class="summary">
 
@@ -501,21 +401,12 @@ def campaign_analysis():
                     high response rates.
                 </p>
 
-                <p>
-                    These customer segments may therefore
-                    be useful targets for future marketing
-                    campaigns.
-                </p>
-
             </div>
 
-
             <div class="footer">
-
                 M10 PMLS - Assignment 1
                 <br>
                 Skin Clinic Campaign Analysis API
-
             </div>
 
         </div>
@@ -528,22 +419,16 @@ def campaign_analysis():
     return HTMLResponse(content=html)
 
 
-# ============================================================
-# RUN APPLICATION LOCALLY
-# ============================================================
-
+# Run locally
 if __name__ == "__main__":
 
-    # Correct FastAPI URL
     url = "http://127.0.0.1:8000/campaign-analysis"
 
-    # Automatically open the correct page after 2 seconds
     threading.Timer(
         2.0,
         lambda: webbrowser.open_new(url)
     ).start()
 
-    # Start FastAPI server
     uvicorn.run(
         app,
         host="127.0.0.1",
